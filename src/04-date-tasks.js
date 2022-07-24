@@ -73,7 +73,6 @@ function isLeapYear(date) {
  */
 function timeSpanToString(startDate, endDate) {
   const interval = new Date(endDate - startDate);
-  console.log(interval.toISOString());
   const hours = `0${interval.getUTCHours()}`.slice(-2);
   const minutes = `0${interval.getUTCMinutes()}`.slice(-2);
   const seconds = `0${interval.getUTCSeconds()}`.slice(-2);

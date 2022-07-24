@@ -172,8 +172,8 @@ class CssSelectorBuilderClass {
     this.s2 = selector2.stringify();
     this.c = combinator;
     // console.log(this.s1);
-    console.log(this.s2);
-    console.log(this.c);
+    // console.log(this.s2);
+    // console.log(this.c);
   }
 }
 
