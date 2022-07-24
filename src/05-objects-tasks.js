@@ -6,7 +6,6 @@
  *                                                                                                *
  ************************************************************************************************ */
 
-
 /**
  * Returns the rectangle object with width and height parameters and getArea() method
  *
@@ -20,10 +19,13 @@
  *    console.log(r.height);      // => 20
  *    console.log(r.getArea());   // => 200
  */
-function Rectangle(/* width, height */) {
-  throw new Error('Not implemented');
+function Rectangle(width, height) {
+  return {
+    width,
+    height,
+    getArea: () => width * height,
+  };
 }
-
 
 /**
  * Returns the JSON representation of specified object
@@ -35,10 +37,9 @@ function Rectangle(/* width, height */) {
  *    [1,2,3]   =>  '[1,2,3]'
  *    { width: 10, height : 20 } => '{"height":10,"width":20}'
  */
-function getJSON(/* obj */) {
-  throw new Error('Not implemented');
+function getJSON(obj) {
+  return JSON.stringify(obj);
 }
-
 
 /**
  * Returns the object of specified type from JSON representation
@@ -51,10 +52,9 @@ function getJSON(/* obj */) {
  *    const r = fromJSON(Circle.prototype, '{"radius":10}');
  *
  */
-function fromJSON(/* proto, json */) {
-  throw new Error('Not implemented');
+function fromJSON(proto, json) {
+  return Object.assign(Object.create(proto), JSON.parse(json));
 }
-
 
 /**
  * Css selectors builder
@@ -110,36 +110,74 @@ function fromJSON(/* proto, json */) {
  *  For more examples see unit tests.
  */
 
-const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
-  },
+//  element#id.class[attr]:pseudoClass::pseudoElement
+//  *              \----/\----/\----------/
+//  *              Can be several occurrences
 
-  id(/* value */) {
-    throw new Error('Not implemented');
-  },
+class CssSelectorBuilderClass {
+  constructor() {
+    this.cssClass = '';
+    this.cssPseudoClass = '';
+  }
 
-  class(/* value */) {
-    throw new Error('Not implemented');
-  },
+  stringify() {
+    const element = this.cssElement ? this.cssElement : '';
+    const id = this.cssId ? `#${this.cssId}` : '';
+    const clas = this.cssClass ? `${this.cssClass}` : '';
+    const attr = this.cssAttr ? `[${this.cssAttr}]` : '';
+    const psClas = this.cssPseudoClass ? `${this.cssPseudoClass}` : '';
+    const psElem = this.cssPseudoElement ? `::${this.cssPseudoElement}` : '';
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
-  },
+    this.cssElement = '';
+    this.cssId = '';
+    this.cssClass = '';
+    this.cssAttr = '';
+    this.cssPseudoClass = '';
+    this.cssPseudoElement = '';
+    return element + id + clas + attr + psClas + psElem;
+  }
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
-  },
+  element(value) {
+    this.cssElement = value;
+    return this;
+  }
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
-  },
+  id(value) {
+    this.cssId = value;
+    return this;
+  }
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
-  },
-};
+  class(value) {
+    this.cssClass += `.${value}`;
+    return this;
+  }
 
+  attr(value) {
+    this.cssAttr = value;
+    return this;
+  }
+
+  pseudoClass(value) {
+    this.cssPseudoClass += `:${value}`;
+    return this;
+  }
+
+  pseudoElement(value) {
+    this.cssPseudoElement = value;
+    return this;
+  }
+
+  combine(selector1, combinator, selector2) {
+    // this.s1 = selector1.stringify();
+    this.s2 = selector2.stringify();
+    this.c = combinator;
+    // console.log(this.s1);
+    console.log(this.s2);
+    console.log(this.c);
+  }
+}
+
+const cssSelectorBuilder = new CssSelectorBuilderClass();
 
 module.exports = {
   Rectangle,
