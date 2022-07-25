@@ -95,7 +95,7 @@ function getSumBetweenNumbers(n1, n2) {
  *   10,10,10 =>  true
  */
 function isTriangle(a, b, c) {
-  return [a, b, c].every((elem, idx, arr) => {
+  return [a, b, c].every((elem, _, arr) => {
     const [x, y] = arr.filter((e) => e !== elem);
     return (!x && !y) || x + y > elem;
   });
@@ -375,8 +375,8 @@ function isBracketsBalanced(str) {
  *    365, 4  => '11231'
  *    365, 10 => '365'
  */
-function toNaryString(/* num, n */) {
-  throw new Error('Not implemented');
+function toNaryString(num, n) {
+  return parseInt(num.toString(n), 10);
 }
 
 /**
@@ -391,8 +391,18 @@ function toNaryString(/* num, n */) {
  *   ['/web/assets/style.css', '/.bin/mocha',  '/read.me'] => '/'
  *   ['/web/favicon.ico', '/web-scripts/dump', '/verbalizer/logs'] => '/'
  */
-function getCommonDirectoryPath(/* paths */) {
-  throw new Error('Not implemented');
+function getCommonDirectoryPath(paths) {
+  const first = paths[0];
+  let common = '';
+  for (let i = 1; i <= first.length; i += 1) {
+    const slice = first.slice(0, i);
+    if (paths.every((path) => path.startsWith(slice))) {
+      common = slice;
+    } else {
+      return common.slice(0, common.lastIndexOf('/') + 1);
+    }
+  }
+  return '';
 }
 
 /**
@@ -413,8 +423,16 @@ function getCommonDirectoryPath(/* paths */) {
  *                         [ 6 ]]
  *
  */
-function getMatrixProduct(/* m1, m2 */) {
-  throw new Error('Not implemented');
+function getMatrixProduct(m1, m2) {
+  const result = Array.from(new Array(m1.length), () => []);
+  for (let k = 0; k < m2[0].length; k += 1) {
+    for (let i = 0; i < m1.length; i += 1) {
+      let temp = 0;
+      for (let j = 0; j < m2.length; j += 1) temp += m1[i][j] * m2[j][k];
+      result[i][k] = temp;
+    }
+  }
+  return result;
 }
 
 /**
@@ -447,9 +465,24 @@ function getMatrixProduct(/* m1, m2 */) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
+function evaluateTicTacToePosition(position) {
+  if (position[0][0] === 'X' && position[1][1] === 'X' && position[2][2] === 'X') return 'X';
+  if (position[0][0] === '0' && position[1][1] === '0' && position[2][2] === '0') return '0';
+  if (position[0][2] === 'X' && position[1][1] === 'X' && position[2][0] === 'X') return 'X';
+  if (position[0][2] === '0' && position[1][1] === '0' && position[2][0] === '0') return '0';
+
+  for (let i = 0; i < 3; i += 1) {
+    if (position[i].length === 3) {
+      if (position[i].every((val) => val === 'X')) return 'X';
+      if (position[i].every((val) => val === '0')) return '0';
+    }
+
+    if (position.every((col) => col[i] === 'X')) return 'X';
+    if (position.every((col) => col[i] === '0')) return '0';
+  }
+  return undefined;
 }
+
 
 module.exports = {
   getFizzBuzz,
