@@ -118,6 +118,12 @@ class CssSelectorBuilderClass {
   constructor() {
     this.cssClass = '';
     this.cssPseudoClass = '';
+    this.cssElement = '';
+    this.cssId = '';
+    this.cssClass = '';
+    this.cssAttr = '';
+    this.cssPseudoClass = '';
+    this.cssPseudoElement = '';
   }
 
   stringify() {
@@ -128,52 +134,88 @@ class CssSelectorBuilderClass {
     const psClas = this.cssPseudoClass ? `${this.cssPseudoClass}` : '';
     const psElem = this.cssPseudoElement ? `::${this.cssPseudoElement}` : '';
 
-    this.cssElement = '';
-    this.cssId = '';
-    this.cssClass = '';
-    this.cssAttr = '';
-    this.cssPseudoClass = '';
-    this.cssPseudoElement = '';
     return element + id + clas + attr + psClas + psElem;
   }
 
   element(value) {
-    this.cssElement = value;
-    return this;
+    if (this.cssElement) {
+      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    }
+
+    if (['cssId', 'cssClass', 'cssAttr', 'cssPseudoClass', 'cssPseudoElement'].some((e) => this[e])) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+
+    const o = Object.create(this);
+    Object.assign(o, this);
+    o.cssElement = value;
+    return o;
   }
 
   id(value) {
-    this.cssId = value;
-    return this;
+    if (this.cssId) {
+      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    }
+
+    if (['cssClass', 'cssAttr', 'cssPseudoClass', 'cssPseudoElement'].some((e) => this[e])) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+
+    const o = Object.create(this);
+    Object.assign(o, this);
+    o.cssId = value;
+    return o;
   }
 
   class(value) {
-    this.cssClass += `.${value}`;
-    return this;
+    if (['cssAttr', 'cssPseudoClass', 'cssPseudoElement'].some((e) => this[e])) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+
+    const o = Object.create(this);
+    Object.assign(o, this);
+    o.cssClass += `.${value}`;
+    return o;
   }
 
   attr(value) {
-    this.cssAttr = value;
-    return this;
+    if (['cssPseudoClass', 'cssPseudoElement'].some((e) => this[e])) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+
+    const o = Object.create(this);
+    Object.assign(o, this);
+    o.cssAttr = value;
+    return o;
   }
 
   pseudoClass(value) {
-    this.cssPseudoClass += `:${value}`;
-    return this;
+    if (this.cssPseudoElement) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+
+    const o = Object.create(this);
+    Object.assign(o, this);
+    o.cssPseudoClass += `:${value}`;
+    return o;
   }
 
   pseudoElement(value) {
-    this.cssPseudoElement = value;
-    return this;
+    if (this.cssPseudoElement) throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+
+    const o = Object.create(this);
+    Object.assign(o, this);
+    o.cssPseudoElement = value;
+    return o;
   }
 
   combine(selector1, combinator, selector2) {
-    // this.s1 = selector1.stringify();
-    this.s2 = selector2.stringify();
-    this.c = combinator;
-    // console.log(this.s1);
-    // console.log(this.s2);
-    // console.log(this.c);
+    const o = Object.create(this);
+    o.s1 = selector1.stringify();
+    o.s2 = selector2.stringify();
+    o.c = combinator;
+    o.stringify = () => `${o.s1} ${o.c} ${o.s2}`;
+    return o;
   }
 }
 
